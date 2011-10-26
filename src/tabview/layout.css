@@ -1,0 +1,22 @@
+.nui-tabview {
+    
+}
+
+.nui-tabview .nui-tabs {
+    display: table;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nui-tabview .nui-tabs li {
+    display: table-cell;
+}
+
+.nui-tabview .nui-panels .nui-panel {
+    display: none;
+}
+
+.nui-tabview .nui-panels .nui-panel.selected {
+    display: block;
+}
