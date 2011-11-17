@@ -14,12 +14,9 @@
     <!-- the directory containing library files -->
     <property name="lib.dir" value="./lib" />    
     
-    <!-- library files -->
-    <property name="jshint.js" value="jshint.js" />
-    <property name="yuitest.js" value="yuitest.js" />
-    
     <!-- output filenames -->
-    <property name="core.build.file" value="nui.js"/>    
+    <property name="core.build.file" value="nui-core.js"/>    
+    <property name="core.tests.file" value="nui-core-tests.js"/>    
     
     <!-- embeddable license -->
     <loadfile property="license.text" srcfile="LICENSE" />   
@@ -72,7 +69,7 @@
     </target>
     
     <!-- validate JS files with JSHint -->
-    <target name="lint">       
+    <target name="jslint">       
         <fileset dir="${src.dir}" includes="**/*.js" id="jsfiles.raw"/>
         <pathconvert pathsep=" " property="jsfiles.clean" refid="jsfiles.raw" />
         <exec executable="java">
@@ -83,47 +80,60 @@
         </exec>        
     </target>
 
-    <!-- run tests on the command line -->
-    <target name="test" depends="build.all,lint,test.general.rules">       
+    <!-- validate CSS files with CSS Lint -->
+    <target name="csslint">       
+        <fileset dir="${src.dir}" includes="**/*.css" id="cssfiles.raw"/>
+        <pathconvert pathsep=" " property="cssfiles.clean" refid="cssfiles.raw" />
         <exec executable="java" failonerror="true">
             <arg line="-jar"/>
             <arg path="${lib.dir}/js.jar"/>
-            <arg path="${lib.dir}/yuitest-rhino-cli.js" />
-            <arg path="${build.dir}/${core.build.file}" />
-            <arg path="${build.dir}/${tests.build.file}" />
-        </exec>              
-    </target>
+            <arg path="${lib.dir}/csslint-rhino.js" />      
 
-    <!-- must be done separately from other tests due to Rhino limitations -->
-    <target name="test.general.rules">       
+            <!-- your customized arguments go here -->
+            <arg line="${cssfiles.clean} --errors=errors --quiet"/>
+        </exec>       
+    </target>
+    
+    <!-- all linting -->
+    <target name="lint" depends="jslint,csslint"/>
+
+    <!-- run tests on the command line -->
+    <target name="test" depends="build.all,lint">       
         <exec executable="java" failonerror="true">
             <arg line="-jar"/>
             <arg path="${lib.dir}/js.jar"/>
             <arg path="${lib.dir}/yuitest-rhino-cli.js" />
-            <arg path="${build.dir}/${core.build.file}" />
-            <arg path="${tests.dir}/all-rules.js" />
+            <arg path="${build.dir}/core/${core.build.file}" />
+            <arg path="${build.dir}/core/${core.tests.file}" />
+            <arg line="--groups=core" />
         </exec>              
     </target>
 
     <!-- build the core library -->
     <target name="build.core">    
-        <concat destfile="${build.dir}/${core.build.file}"  fixlastline="true">
+        
+        <concat destfile="${build.dir}/core/${core.build.file}"  fixlastline="true">
             <header trimleading="yes">/*! 
             ${license.text}
             */
-            /* Build time: ${RIGHT_NOW} */
+            /* Version v@VERSION@, Build time: ${RIGHT_NOW} */
             </header>
             <filelist dir="${src.dir}/core" files="nui.js" />
-            <fileset dir="${src.dir}/" includes="*.js" excludes="core/nui.js"/>
-            
+            <fileset dir="${src.dir}/core" includes="*.js" excludes="nui.js"/>            
         </concat>
     </target>
     
+    <!-- build the controls -->
+    <target name="build.controls">
+        <copy todir="${build.dir}">
+            <fileset dir="${src.dir}" includes="**/*.js" excludes="core/*.js"/>
+        </copy>
+    </target>
     
     <!-- build the tests into a single file -->
     <target name="build.tests">    
-        <concat destfile="${build.dir}/${tests.build.file}"  fixlastline="true">
-            <fileset dir="${tests.dir}/" includes="**/*.js" excludes="all-rules.js" />           
+        <concat destfile="${build.dir}/core/${core.tests.file}"  fixlastline="true">
+            <fileset dir="${tests.dir}/core" includes="**/*.js" />           
         </concat>        
     </target>   
 
@@ -139,18 +149,7 @@
         </replaceregexp>    
     </target>
     
-    <!-- Update CSS parser with the latest -->
-    <target name="parser.update">
-        <get src="${parser.url}" dest="${lib.dir}/${parserlib.js}" />
-    </target>
-    
-    <!-- Update JSHint with the latest -->
-    <target name="jshint.update">
-        <get src="${jshint-rhino.url}" dest="${lib.dir}/" />
-        <get src="${jshint.url}" dest="${lib.dir}/" />
-    </target>
-    
     <!-- Build all files -->
-    <target name="build.all" depends="clean,build.core,build.tests,build.rhino"/>
+    <target name="build.all" depends="clean,build.core,build.tests,build.controls"/>
 
 </project>

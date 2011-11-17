@@ -1,3 +1,4 @@
+/*global nui*/
 /**
  * NUI events interface
  * @class event

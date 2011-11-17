@@ -3,5 +3,11 @@
  * @class nui
  * @static
  */
-/*global parserlib, Reporter*/
-var nui = {};
+var nui = {
+
+    //current version (filled in by build system)
+    version: "@VERSION@",
+    
+    //attribute used to store data
+    DATA_NUI    : "data-nui"
+};

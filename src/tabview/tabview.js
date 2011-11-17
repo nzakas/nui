@@ -1,41 +1,39 @@
+/*global nui, window, document*/
 (function(){
 
-    var SELECTED_CLASS = "selected";
-
-
-    //addClass
-    //hasClass
-    //removeClass
+    //constants
+    var SELECTED_CLASS  = "selected",
+        DATA_NUI        = nui.DATA_NUI,
+        TABS_CLASS      = "nui-tabs",
+        
+        //shortcuts
+        data    = nui.data,
+        dom     = nui.dom,
+        evt     = nui.event;
     
-    //ancestor
-
+    //attach global handler - should probably be done by framework
     nui.event.on(document, "click", function(event){
         event = event || window.event;
-        var target = nui.event.getTarget(event),
-            node = nui.dom.ancestorByAttribute(target, "data-nui"),
+        var target = evt.getTarget(event),
+            node = dom.ancestorByAttribute(target, DATA_NUI),
             tabs, panels, i, len, selIndex,
             info;
             
-        if (!node) return;
+        if (!node) {
+            return;
+        }
         
-        info = nui.data.parse(node.getAttribute("data-nui"));
+        info = data.parse(node.getAttribute(DATA_NUI));
         
-        switch(info.type){
-            case "tabview":
-                tabs = nui.dom.selectAll(".nui-tabs li", node);
-                panels = nui.dom.selectAll(".nui-panels .nui-panel", node);
-            
-                if (nui.dom.ancestorByClass(target, "nui-tabs")){
-                
-                    nui.css.removeClass(tabs.concat(panels), SELECTED_CLASS);
-                    nui.css.addClass(target.parentNode, SELECTED_CLASS);
-                    nui.css.addClass(nui.dom.select(target.getAttribute("href")), SELECTED_CLASS);
-                    
-                    nui.event.preventDefault(event);
-                }
-            
-
-                break;
+        if (info.type == "tabview"){
+            tabs = dom.selectAll("." + TABS_CLASS + " li", node);
+            panels = dom.selectAll(".nui-panels .nui-panel", node);
+        
+            if (dom.ancestorByClass(target, TABS_CLASS)){            
+                dom.removeClass(tabs.concat(panels), SELECTED_CLASS);
+                dom.addClass([ target.parentNode, nui.dom.select(target.getAttribute("href")) ], SELECTED_CLASS);                
+                evt.preventDefault(event);
+            }            
         }
         
     });    

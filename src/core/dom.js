@@ -1,3 +1,4 @@
+/*global nui, document*/
 /**
  * Main NUI object.
  * @class dom
@@ -36,7 +37,7 @@ nui.dom = {
     
     ancestorByAttribute: function(node, attribute){
         return this.ancestor(node, function(node){
-            return node.getAttribute(attribute) != null;
+            return node.getAttribute(attribute) !== null;
         });           
     }, 
     

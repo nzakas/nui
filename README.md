@@ -1,6 +1,6 @@
 # NUI
 
-The New User Interface (NUI) project is an **experimental** web UI library with the goal of allowing developers to create rich, interactive web pages without writing a single line of JavaScript. 
+The "No JavaScript" User Interface (NUI) project is an **experimental** web UI library with the goal of allowing developers to create rich, interactive web pages without writing a single line of JavaScript. 
 
 ## EXPERIMENT!!
 
