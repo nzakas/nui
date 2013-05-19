@@ -5,26 +5,24 @@
 
     <!-- the directories containing the source files -->
     <property name="src.dir" value="./src" />
-    <property name="tests.dir" value="./tests" />
-    
+    <property name="components.dir" value="${src.dir}/components" />
+    <property name="core.dir" value="${src.dir}/core" />
+
+    <!-- the directories and files to output to -->
+    <property name="lib.dir" value="./lib" />
+
     <!-- the directories and files to output to -->
     <property name="build.dir" value="./build" />
-    <property name="release.dir" value="./release" />
 
-    <!-- the directory containing library files -->
-    <property name="lib.dir" value="./lib" />    
-    
-    <!-- library files -->
-    <property name="jshint.js" value="jshint.js" />
-    <property name="yuitest.js" value="yuitest.js" />
-    
     <!-- output filenames -->
-    <property name="core.build.file" value="nui.js"/>    
-    
-    <!-- embeddable license -->
-    <loadfile property="license.text" srcfile="LICENSE" />   
+    <property name="full.build.file" value="nui.js"/>
+    <property name="core.build.file" value="nui-core.js"/>
+    <property name="components.build.file" value="nui-components.js"/>
+    <property name="css.build.file" value="nui-components.css"/>
 
-    <!-- get a timestamp -->
+    <!-- license information -->
+    <loadfile property="license.text" srcfile="LICENSE" />
+
     <tstamp>
       <format property="RIGHT_NOW"
               pattern="d-MMMM-yyyy hh:mm:ss"
@@ -34,123 +32,75 @@
       <format property="SIMPLE_DATE"
               pattern="MMMM d, yyyy"
               locale="en,US"/>
-    </tstamp>    
-    
+    </tstamp>
+
     <!-- clean -->
     <target name="clean">
         <delete dir="${build.dir}" />
     </target>
-    
-    <target name="changelog.update">
-        <exec executable="git" failonerror="true" outputproperty="git.tag">
-            <arg line="tag"/>
-        </exec>      
-        <script language="javascript"><![CDATA[
-            //get the most recent tag to get the diff
-            var tags = nui.getProperty("git.tag").replace("\r", "").split("\n"),
-                lastTag = tags[tags.length-1];
-            nui.setProperty("git.log.range", lastTag + "..HEAD");
-        ]]></script>
-        
-        <!-- git log -pretty=format:'* %s (%an)' v0.4.0..v0.5.0-->
-        <exec executable="git" failonerror="true" outputproperty="git.changelog">
-            <arg line="log --pretty=format:'* %s (%an)' ${git.log.range}"/>
-        </exec>      
-        
-        <concat destfile="CHANGELOG.tmp"  fixlastline="true">
-            <header trimleading="yes">${SIMPLE_DATE} - v${nui.version}
-            
-            ${git.changelog}
-            
-            </header>
-            <fileset dir="." includes="CHANGELOG" />
-        </concat>
-        
-        <delete file="CHANGELOG"/>
-        <move file="CHANGELOG.tmp" tofile="CHANGELOG"/>
-        
-    </target>
-    
+
     <!-- validate JS files with JSHint -->
-    <target name="lint">       
-        <fileset dir="${src.dir}" includes="**/*.js" id="jsfiles.raw"/>
+    <target name="lint">
+        <fileset dir="${src.dir}" includes="core/*.js,components/*/*.js" id="jsfiles.raw"/>
         <pathconvert pathsep=" " property="jsfiles.clean" refid="jsfiles.raw" />
-        <exec executable="java">
-            <arg line="-jar"/>
-            <arg path="${lib.dir}/js.jar"/>
-            <arg path="${lib.dir}/jshint.js" />        
-            <arg line="${jsfiles.clean} curly=true,forin=true,latedef=true,noempty=true,undef=true,rhino=false" />
-        </exec>        
-    </target>
-
-    <!-- run tests on the command line -->
-    <target name="test" depends="build.all,lint,test.general.rules">       
         <exec executable="java" failonerror="true">
             <arg line="-jar"/>
             <arg path="${lib.dir}/js.jar"/>
-            <arg path="${lib.dir}/yuitest-rhino-cli.js" />
-            <arg path="${build.dir}/${core.build.file}" />
-            <arg path="${build.dir}/${tests.build.file}" />
-        </exec>              
+            <arg path="${lib.dir}/jshint.js" />
+            <arg line="${jsfiles.clean} curly=true,forin=true,latedef=true,evil=true,loopfunc=true,undef=true,rhino=false" />
+        </exec>
     </target>
 
-    <!-- must be done separately from other tests due to Rhino limitations -->
-    <target name="test.general.rules">       
-        <exec executable="java" failonerror="true">
-            <arg line="-jar"/>
-            <arg path="${lib.dir}/js.jar"/>
-            <arg path="${lib.dir}/yuitest-rhino-cli.js" />
-            <arg path="${build.dir}/${core.build.file}" />
-            <arg path="${tests.dir}/all-rules.js" />
-        </exec>              
+    <!-- build the full library -->
+    <target name="build.full" depends="build.core,build.components,build.css">
     </target>
 
     <!-- build the core library -->
-    <target name="build.core">    
+    <target name="build.core">
+
         <concat destfile="${build.dir}/${core.build.file}"  fixlastline="true">
-            <header trimleading="yes">/*! 
+            <header trimleading="yes">/*!
             ${license.text}
             */
-            /* Build time: ${RIGHT_NOW} */
+            /* Version v@VERSION@, Build time: ${RIGHT_NOW} */
             </header>
-            <filelist dir="${src.dir}/core" files="nui.js" />
-            <fileset dir="${src.dir}/" includes="*.js" excludes="core/nui.js"/>
-            
-        </concat>
-    </target>
-    
-    
-    <!-- build the tests into a single file -->
-    <target name="build.tests">    
-        <concat destfile="${build.dir}/${tests.build.file}"  fixlastline="true">
-            <fileset dir="${tests.dir}/" includes="**/*.js" excludes="all-rules.js" />           
-        </concat>        
-    </target>   
 
-    <!-- Create a release with version number embedded -->
-    <target name="release" depends="test,build.all,changelog.update">
-        <delete dir="${release.dir}" />
-        <mkdir dir="${release.dir}"/>
-        <copy todir="${release.dir}">
-            <fileset dir="${build.dir}" includes="**/*" />
-        </copy>
-        <replaceregexp match="@VERSION@" replace="${nui.version}" flags="g" byline="true">
-            <fileset dir="${release.dir}" includes="**/*"/>
-        </replaceregexp>    
+            <filelist dir="${src.dir}/core" files="nui.js" />
+            <fileset dir="${src.dir}/core" includes="*.js" excludes="nui.js"/>
+        </concat>
+
     </target>
-    
-    <!-- Update CSS parser with the latest -->
-    <target name="parser.update">
-        <get src="${parser.url}" dest="${lib.dir}/${parserlib.js}" />
+
+    <!-- build the component library -->
+    <target name="build.components">
+
+        <concat destfile="${build.dir}/${components.build.file}"  fixlastline="true">
+            <header trimleading="yes">/*!
+            ${license.text}
+            */
+            /* Version v@VERSION@, Build time: ${RIGHT_NOW} */
+            </header>
+            <fileset dir="${components.dir}" includes="**/*.js" />
+        </concat>
+
     </target>
-    
-    <!-- Update JSHint with the latest -->
-    <target name="jshint.update">
-        <get src="${jshint-rhino.url}" dest="${lib.dir}/" />
-        <get src="${jshint.url}" dest="${lib.dir}/" />
+
+    <!-- build the CSS library -->
+    <target name="build.css">
+
+        <concat destfile="${build.dir}/${css.build.file}"  fixlastline="true">
+            <header trimleading="yes">/*!
+            ${license.text}
+            */
+            /* Version v@VERSION@, Build time: ${RIGHT_NOW} */
+            </header>
+            <fileset dir="${components.dir}" includes="*.css" />
+        </concat>
+
     </target>
-    
+
     <!-- Build all files -->
-    <target name="build.all" depends="clean,build.core,build.tests,build.rhino"/>
+    <target name="build.all" depends="lint,build.full"/>
 
 </project>
+

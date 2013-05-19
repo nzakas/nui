@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NUI Demo</title>
+    <style>
+        .nui-tabpanels div {
+            display:none;
+        }
+
+        .nui-tabpanels div.nui-selected {
+            display: block;
+        }
+
+        .nui-tabs .nui-selected {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Tabviews</h2>
+
+    <div data-nui-type="tabview">
+        <ol class="nui-tabs">
+            <li class="nui-selected"><a href="#">Tab 1</a></li>
+            <li><a href="#">Tab 2</a></li>
+            <li><a href="#">Tab 3</a></li>
+        </ol>
+        <div class="nui-tabpanels">
+            <div class="nui-selected">Content 1</div>
+            <div>Content 2</div>
+            <div>Content 3</div>
+        </div>
+    </div>
+
+
+    <script src="../build/nui-core.js"></script>
+    <script src="../build/nui-components.js"></script>
+    <script>
+        nui.init();
+    </script>
+</body>
+</html>
