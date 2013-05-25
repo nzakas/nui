@@ -1,3 +1,4 @@
+/*global nui, document*/
 /**
  * Main NUI object.
  * @class dom
@@ -9,7 +10,6 @@
 nui.dom = (function() {
 
     var util = nui.util;
-
 
     return {
         addClass: function(nodes, className){

@@ -3,6 +3,7 @@
  * @class nui
  * @static
  */
+
 /*jshint unused: true*/
 var nui = (function(){
 

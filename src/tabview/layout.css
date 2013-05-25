@@ -1,7 +1,7 @@
-.nui-tabview {
-    
-}
-
+/*
+ * Layout styles for tabview control.
+ */
+ 
 .nui-tabview .nui-tabs {
     display: table;
     list-style-type: none;

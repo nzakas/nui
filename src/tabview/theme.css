@@ -1,3 +1,7 @@
+/*
+ * Theme for tabview control.
+ */
+
 .selected {
     background: red;
 }
