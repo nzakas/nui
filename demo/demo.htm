@@ -3,33 +3,100 @@
 <head>
     <title>NUI Demo</title>
     <style>
+
+        .clearfix:before,
+        .clearfix:after {
+            content: "";
+            display: table;
+            border-collapse: collapse;
+        }
+        .clearfix:after {
+            clear: both;
+        }
+        .clearfix {
+            min-height: 0; /* support: IE7 */
+        }
+
+        .nui-tabview {
+            border-radius: 4px;
+            border: 1px solid #aaa;
+            font-family: Verdana, Arial, Sans-Serif;
+            padding: 0.2em;
+            position: relative;
+        }
+
+        .nui-tabs {
+            border-radius: 4px;
+            border: 1px solid #aaa;
+            background: #ccc;
+            color: #222;
+            font-size: 100%;
+            line-height: 1.3;
+            margin: 0;
+            padding: 0.2em 0.2em 0;
+        }
+
         .nui-tabpanels div {
             display:none;
+            border-bottom-right-radius: 4px;
+            border-bottom-left-radius: 4px;
         }
 
         .nui-tabpanels div.nui-selected {
             display: block;
         }
 
-        .nui-tabs .nui-selected {
-            color: red;
+        .nui-tabs li {
+            background: #e6e6e6;
+            border: 1px solid #d3d3d3;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            float: left;
+            list-style-type: none;
+            position: relative;
+            top: 0;
+            margin: 1px 0.2em 0 0;
+            border-bottom-width: 0;
+            padding: 0;
+            white-space: nowrap;
         }
+
+        .nui-tabs li a {
+            float: left;
+            padding: 0.5em 1em;
+            text-decoration: none;
+            color: #555;
+        }
+
+        .nui-tabs li.nui-selected {
+            border-color: #aaa;
+            background: #fff;
+            font-weight: normal;
+            margin-bottom: -1px;
+            padding-bottom: 1px;
+        }
+
+        .nui-tabs li.nui-selected a {
+            color: #212121;
+        }
+
     </style>
 </head>
 <body>
 
     <h2>Tabviews</h2>
 
-    <div data-nui-type="tabview">
-        <ol class="nui-tabs">
+
+    <div data-nui-type="tabview" class="nui-tabview">
+        <ol class="nui-tabs clearfix">
             <li class="nui-selected"><a href="#">Tab 1</a></li>
             <li><a href="#">Tab 2</a></li>
             <li><a href="#">Tab 3</a></li>
         </ol>
         <div class="nui-tabpanels">
-            <div class="nui-selected">Content 1</div>
-            <div>Content 2</div>
-            <div>Content 3</div>
+            <div class="nui-selected"><p>Content 1</p></div>
+            <div><p>Content 2</p></div>
+            <div><p>Content 3</p></div>
         </div>
     </div>
 
