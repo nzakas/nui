@@ -1,6 +1,6 @@
 # NUI
 
-The "No JavaScript" User Interface (NUI) project is an **experimental** web UI library with the goal of allowing developers to create rich, interactive web pages without writing a single line of JavaScript. 
+The "No JavaScript" User Interface (NUI) project is an **experimental** web UI library with the goal of allowing developers to create rich, interactive web pages without writing a single line of JavaScript.
 
 ## EXPERIMENT!!
 
@@ -15,3 +15,9 @@ NUI is an **experiment** and therefore:
 
 * Figure out just how much JavaScript is necessary for common patterns
 * Determine if it's feasible to not write a single line of JavaScript to initialize components
+
+## Try it out
+
+1. Run `ant` to build the files.
+2. Open `demo/demo.htm`
+3. Enjoy
