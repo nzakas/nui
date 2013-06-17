@@ -207,7 +207,11 @@ nui.add("tabview", function(nui) {
                 nui.event.preventDefault(event);
 
                 tabElement = dom.ancestorByAttribute(target, INDEX_ATTRIBUTE);
-                changeTab(element, tabElement.getAttribute(INDEX_ATTRIBUTE));
+
+                if (tabElement) {
+                    changeTab(element, tabElement.getAttribute(INDEX_ATTRIBUTE));
+                }
+
             }
         },
 
